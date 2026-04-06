@@ -328,6 +328,17 @@ const ModuleRoutes = ({ moduleName }) => {
             </>
           );
 
+        case "Question Report":
+          return (
+            <>
+              <Route path="question_report" element={<QuestionReportPage />} />
+              <Route
+                path="question_report/detailed"
+                element={<DetailedReportTable />}
+              />
+            </>
+          );
+
         default:
           return null; // If no menu matches, do nothing (you can handle default behavior)
       }

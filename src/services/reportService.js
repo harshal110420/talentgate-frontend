@@ -10,6 +10,6 @@ export const fetchQuestionsReport = async (filters) => {
 export const fetchDetailedQuestionsReport = async (filters) => {
   const params = new URLSearchParams(filters).toString();
   const res = await axiosInstance.get(`/reports/questions/detailed?${params}`);
-  return res.data;
+  return res.data.data;
 };
 // export default { fetchQuestionsReport };

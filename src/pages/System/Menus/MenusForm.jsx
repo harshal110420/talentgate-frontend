@@ -36,7 +36,7 @@ const MenuForm = () => {
   const menus = useSelector((state) => state.menus.list);
   const modulePath = getModulePathByMenu("menu_management", modules, menus);
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const [isMenuIdManuallyEdited, setIsMenuIdManuallyEdited] = useState(false);
   const [formData, setFormData] = useState(initialFormData);
   const [currentStep, setCurrentStep] = useState(0);
 
@@ -92,6 +92,13 @@ const MenuForm = () => {
   };
 
 
+  const toSnakeCase = (value) =>
+    value
+      .toLowerCase()
+      .trim()
+      .replace(/[^a-z0-9\s]/g, "") // remove special chars
+      .replace(/\s+/g, "_");
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (isSubmitting) return;
@@ -128,6 +135,18 @@ const MenuForm = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
+    if (name === "name" && !isEditMode && !isMenuIdManuallyEdited) {
+      setFormData((prev) => ({
+        ...prev,
+        name: value,
+        menuId: toSnakeCase(value),
+      }));
+      return;
+    }
+
+    if (name === "menuId") {
+      setIsMenuIdManuallyEdited(true);
+    }
     setFormData((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
