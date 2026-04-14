@@ -140,24 +140,43 @@ const CandidatePage = () => {
   const clearFilters = () => { setFilters({ search: "", departmentId: "", applicationStage: "", isActive: "", source: "", examStatus: "" }); setSearchInput(""); };
 
   /* ── Action handlers ── */
+  // const handleSendMail = async () => {
+  //   if (!selectedCandidate) return;
+  //   if (!selectedCandidate.examId) { toast.error("No exam assigned."); return; }
+  //   dispatch(updateCandidateExamStatus({ candidateId: selectedCandidate.id, examStatus: "In progress", lastMailSentAt: new Date().toISOString() }));
+  //   toast.success(`Mail sent to ${selectedCandidate.name}!`);
+  //   setConfirmModalOpen(false); setSelectedCandidate(null);
+  //   try { await sendCandidateExamMail(selectedCandidate.id); }
+  //   catch (e) { toast.error(e?.response?.data?.message || "Failed to send mail."); }
+  // };
+
   const handleSendMail = async () => {
     if (!selectedCandidate) return;
     if (!selectedCandidate.examId) { toast.error("No exam assigned."); return; }
-    dispatch(updateCandidateExamStatus({ candidateId: selectedCandidate.id, examStatus: "In progress", lastMailSentAt: new Date().toISOString() }));
-    toast.success(`Mail sent to ${selectedCandidate.name}!`);
-    setConfirmModalOpen(false); setSelectedCandidate(null);
-    try { await sendCandidateExamMail(selectedCandidate.id); }
-    catch (e) { toast.error(e?.response?.data?.message || "Failed to send mail."); }
-  };
 
-  const handleReassign = async () => {
-    if (!selectedReassignCandidate || !selectedExamId) { toast.error("Please select an exam."); return; }
-    toast.success(`Exam reassigned to ${selectedReassignCandidate.name}!`);
-    setReassignModalOpen(false); setSelectedReassignCandidate(null); setSelectedExamId("");
+    // ✅ ID pehle save kar lo
+    const candidateId = selectedCandidate.id;
+    const candidateName = selectedCandidate.name;
+
+    setConfirmModalOpen(false);
+    setSelectedCandidate(null);
+    setLoadingConfirm(false);
+
     try {
-      await dispatch(reassignExam({ candidateId: selectedReassignCandidate.id, examId: selectedExamId })).unwrap();
-      dispatch(fetchCandidates({ ...filtersRef.current, page: pagination.currentPage, limit: 10 }));
-    } catch (err) { toast.error(err || "Failed to reassign exam"); }
+      // ✅ Pehle actual API call karo
+      await sendCandidateExamMail(candidateId);
+
+      // ✅ Sirf success hone pe update karo
+      dispatch(updateCandidateExamStatus({
+        candidateId,
+        examStatus: "In progress",
+        lastMailSentAt: new Date().toISOString()
+      }));
+
+      toast.success(`Mail sent to ${candidateName}!`);
+    } catch (e) {
+      toast.error(e?.response?.data?.message || "Failed to send mail.");
+    }
   };
 
   const handleAssignExam = (id) => navigate(`/module/${modulePath}/candidate_management/update/${id}`, { state: { openStep: 3 } });
