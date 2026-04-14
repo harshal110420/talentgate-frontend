@@ -184,6 +184,25 @@ const CandidatePage = () => {
   const handleShortlistExam = async (id) => { try { await dispatch(shortlistCandidateForExam(id)).unwrap(); toast.success("Shortlisted for exam!"); dispatch(fetchCandidates({ ...filtersRef.current, page: pagination.currentPage, limit: 10 })); } catch (e) { toast.error(e || "Failed"); } };
   const handleShortlistIntv = async (id) => { try { await dispatch(shortlistCandidateForInterview(id)).unwrap(); toast.success("Shortlisted for interview!"); dispatch(fetchCandidates({ ...filtersRef.current, page: pagination.currentPage, limit: 10 })); } catch (e) { toast.error(e || "Failed"); } };
 
+  const handleReassign = async () => {
+    if (!selectedReassignCandidate || !selectedExamId) { toast.error("Please select an exam."); return; }
+
+    const candidateId = selectedReassignCandidate.id;
+    const candidateName = selectedReassignCandidate.name;
+
+    setReassignModalOpen(false);
+    setSelectedReassignCandidate(null);
+    setSelectedExamId("");
+
+    try {
+      await dispatch(reassignExam({ candidateId, examId: selectedExamId })).unwrap();
+      dispatch(fetchCandidates({ ...filtersRef.current, page: pagination.currentPage, limit: 10 }));
+      toast.success(`Exam reassigned to ${candidateName}!`);
+    } catch (err) {
+      toast.error(err || "Failed to reassign exam");
+    }
+  };
+
   const handleRejectCandidate = async () => {
     if (!rejectRemark.trim()) { toast.error("Please enter rejection remark"); return; }
     try {
