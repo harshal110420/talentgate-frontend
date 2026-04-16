@@ -7,8 +7,7 @@ import { fetchAllLevels } from "../../../features/level/levelSlice";
 import SkeletonPage from "../../../components/skeletons/skeletonPage";
 import { getModulePathByMenu } from "../../../utils/navigation";
 import ButtonWrapper from "../../../components/ButtonWrapper";
-import { PlusCircle, Eye, Pencil } from "lucide-react";
-
+import { PlusCircle, Eye, Pencil, FileText, Sheet } from "lucide-react";
 const ITEMS_PER_PAGE = 10; // 👈 change as needed
 
 const ExamPage = () => {
@@ -162,6 +161,9 @@ const ExamPage = () => {
               <th className="px-4 py-3 text-left">Department</th>
               <th className="px-4 py-3 text-left">Level</th>
               <th className="px-4 py-3 text-left">Status</th>
+              <th className="px-4 py-3 text-center border-l border-gray-200 dark:border-gray-700">
+                Reports
+              </th>
               <th className="px-4 py-3 text-center sticky right-0 bg-gray-100 dark:bg-gray-800 border-l">
                 Actions
               </th>
@@ -188,8 +190,8 @@ const ExamPage = () => {
                 <tr
                   key={exam.id}
                   className={`transition-colors duration-150 ${i % 2 === 0
-                      ? "bg-white dark:bg-gray-900"
-                      : "bg-gray-50 dark:bg-gray-800"
+                    ? "bg-white dark:bg-gray-900"
+                    : "bg-gray-50 dark:bg-gray-800"
                     } hover:bg-blue-50 dark:hover:bg-gray-700`}
                 >
                   <td className="px-4 py-2 text-[14px] font-medium">
@@ -200,12 +202,54 @@ const ExamPage = () => {
                   <td className="px-4 py-2">
                     <span
                       className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${exam.isActive
-                          ? "bg-green-100 text-green-700 dark:bg-green-800/30 dark:text-green-300"
-                          : "bg-red-100 text-red-700 dark:bg-red-800/30 dark:text-red-300"
+                        ? "bg-green-100 text-green-700 dark:bg-green-800/30 dark:text-green-300"
+                        : "bg-red-100 text-red-700 dark:bg-red-800/30 dark:text-red-300"
                         }`}
                     >
                       {exam.isActive ? "Active" : "Inactive"}
                     </span>
+                  </td>
+                  <td className="px-4 py-2 text-center border-l border-gray-200 dark:border-gray-700">
+                    <div className="flex justify-center items-center gap-1.5">
+                      <ButtonWrapper subModule="Exam Management" permission="print">
+                        <a
+                          href={`${import.meta.env.VITE_BACKEND_URL}/exam/exams/${exam.id}/print/question-paper`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                          title="Download Question Paper"
+                        >
+                          <FileText className="w-3 h-3" />
+                          Q Paper
+                        </a>
+                      </ButtonWrapper>
+
+                      <ButtonWrapper subModule="Exam Management" permission="print">
+                        <a
+                          href={`${import.meta.env.VITE_BACKEND_URL}/exam/exams/${exam.id}/print/answer-key`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                          title="Download Answer Key"
+                        >
+                          <FileText className="w-3 h-3" />
+                          Ans Key
+                        </a>
+                      </ButtonWrapper>
+
+                      <ButtonWrapper subModule="Exam Management" permission="print">
+                        <a
+                          href={`${import.meta.env.VITE_BACKEND_URL}/exam/exams/${exam.id}/print/excel`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-1 text-xs px-2 py-1 rounded border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 transition"
+                          title="Download Excel"
+                        >
+                          <Sheet className="w-3 h-3" />
+                          Excel
+                        </a>
+                      </ButtonWrapper>
+                    </div>
                   </td>
                   <td className="px-4 py-2 text-center sticky right-0 bg-gray-50 dark:bg-gray-800 border-l">
                     <div className="flex justify-center items-center gap-2">
@@ -247,43 +291,45 @@ const ExamPage = () => {
               ))
             )}
           </tbody>
-        </table>
-      </div>
+        </table >
+      </div >
 
       {/* Pagination */}
-      {totalPages > 1 && (
-        <div className="flex justify-center items-center mt-6 gap-2">
-          <button
-            disabled={currentPage === 1}
-            onClick={() => handlePageChange(currentPage - 1)}
-            className="px-3 py-1.5 border rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50"
-          >
-            Prev
-          </button>
-
-          {Array.from({ length: totalPages }, (_, i) => (
+      {
+        totalPages > 1 && (
+          <div className="flex justify-center items-center mt-6 gap-2">
             <button
-              key={i + 1}
-              onClick={() => handlePageChange(i + 1)}
-              className={`px-3 py-1.5 border rounded-md text-sm font-medium transition ${currentPage === i + 1
+              disabled={currentPage === 1}
+              onClick={() => handlePageChange(currentPage - 1)}
+              className="px-3 py-1.5 border rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50"
+            >
+              Prev
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => (
+              <button
+                key={i + 1}
+                onClick={() => handlePageChange(i + 1)}
+                className={`px-3 py-1.5 border rounded-md text-sm font-medium transition ${currentPage === i + 1
                   ? "bg-blue-600 text-white border-blue-600"
                   : "text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
-                }`}
-            >
-              {i + 1}
-            </button>
-          ))}
+                  }`}
+              >
+                {i + 1}
+              </button>
+            ))}
 
-          <button
-            disabled={currentPage === totalPages}
-            onClick={() => handlePageChange(currentPage + 1)}
-            className="px-3 py-1.5 border rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50"
-          >
-            Next
-          </button>
-        </div>
-      )}
-    </div>
+            <button
+              disabled={currentPage === totalPages}
+              onClick={() => handlePageChange(currentPage + 1)}
+              className="px-3 py-1.5 border rounded-md text-sm font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 disabled:opacity-50"
+            >
+              Next
+            </button>
+          </div>
+        )
+      }
+    </div >
   );
 };
 
